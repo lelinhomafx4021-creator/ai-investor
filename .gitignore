@@ -1,0 +1,25 @@
+# 编译输出
+target/
+*.class
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 日志
+logs/
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Maven
+*.jar
+*.war
+
+# 临时文件
+*.tmp
+*.swp
+application-local.yml

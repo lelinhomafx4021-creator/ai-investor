@@ -99,6 +99,7 @@
 | K线图 | 查看历史走势 | 前端图表库 |
 
 **技术流程**：
+
 ```
 定时任务(3秒) → 模拟价格波动 → 更新 Redis → WebSocket 推送 → 浏览器更新
 ```
@@ -113,6 +114,7 @@
 | 交易记录 | 历史成交 | 分页查询 |
 
 **异常处理**：
+
 - 余额不足 → 提示最多能买多少股
 - 持仓不足 → 提示当前持仓数量
 - 非交易时间 → 提示开盘时间
@@ -137,6 +139,7 @@
 | 策略生成 | "帮我写个均线策略" | **Spring AI** |
 
 **对话示例**：
+
 ```
 用户：帮我买100股茅台
 AI：您确定买入贵州茅台100股吗？预计花费18.5万，请回复"确认"
@@ -197,6 +200,7 @@ AI：您可以卖出部分持仓，或者等收益增加后再买入
 | 向量化 | 文档转向量存储 | **Embedding** |
 
 **流程**：
+
 ```
 管理员上传文档 → 文档分块(500字) → 调用 Embedding API → 存入向量库
                                                             ↓
@@ -204,6 +208,7 @@ AI：您可以卖出部分持仓，或者等收益增加后再买入
 ```
 
 **知识库内容**：
+
 - 投资基础：股票、基金、市盈率、K线等
 - 量化教程：均线策略、MACD 策略等
 - 平台帮助：如何下单、如何回测
@@ -455,6 +460,7 @@ public class TradeController {
 ### 股票数据来源
 
 **开发阶段：模拟数据**
+
 ```java
 // 1. 初始化30只热门股票（真实代码和名称，假价格）
 // 2. 定时任务每3秒模拟价格波动（-2% ~ +2%）
@@ -471,6 +477,151 @@ public void mockPriceChange() {
 
 **面试时说**：
 > "项目用模拟数据演示，重点是技术实现。接入真实数据只需替换数据源即可。"
+
+---
+
+## 🗄️ 数据库表设计
+
+### 表清单（7张表）
+
+| 表名 | 说明 | 技术点 |
+|-----|------|--------|
+| `user` | 用户表 | JWT、BCrypt 加密 |
+| `stock` | 股票表 | Redis 缓存行情 |
+| `holding` | 持仓表 | 分布式锁防超卖 |
+| `trade_record` | 交易记录 | 消息队列削峰 |
+| `knowledge` | 知识库 | RAG 向量检索 |
+| `chat_history` | 对话记录 | ChatMemory 持久化 |
+| `notification` | 消息通知 | WebSocket 推送 |
+
+### 表关系
+
+```
+              user（用户）
+           /    |    \     \
+          /     |     \     \
+   holding   trade    chat   notification
+   (持仓)    (交易)   (对话)    (通知)
+      |        |
+    stock    stock
+   (股票)    (股票)
+```
+
+---
+
+### 1. user 用户表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键自增 |
+| username | VARCHAR(50) | 用户名（唯一）|
+| password | VARCHAR(100) | 密码（BCrypt加密）|
+| phone | VARCHAR(20) | 手机号 |
+| balance | DECIMAL(12,2) | 账户余额（默认10万）|
+| role | VARCHAR(20) | 角色：USER/ADMIN |
+| create_time | DATETIME | 创建时间 |
+| update_time | DATETIME | 更新时间 |
+| deleted | TINYINT | 逻辑删除 |
+
+---
+
+### 2. stock 股票表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| code | VARCHAR(20) | 股票代码（如600519）|
+| name | VARCHAR(50) | 股票名称（如贵州茅台）|
+| current_price | DECIMAL(10,2) | 当前价格 |
+| open_price | DECIMAL(10,2) | 今日开盘价 |
+| high_price | DECIMAL(10,2) | 今日最高价 |
+| low_price | DECIMAL(10,2) | 今日最低价 |
+| close_price | DECIMAL(10,2) | 昨日收盘价 |
+| volume | BIGINT | 成交量 |
+| create_time | DATETIME | 创建时间 |
+| update_time | DATETIME | 更新时间 |
+| deleted | TINYINT | 逻辑删除 |
+
+---
+
+### 3. holding 持仓表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 用户ID |
+| stock_code | VARCHAR(20) | 股票代码 |
+| quantity | INT | 持有数量 |
+| avg_cost | DECIMAL(10,2) | 平均成本价 |
+| frozen_quantity | INT | 冻结数量（卖出挂单中）|
+| create_time | DATETIME | 首次买入时间 |
+| update_time | DATETIME | 更新时间 |
+
+**唯一索引**：`(user_id, stock_code)` 一个用户一只股票只有一条记录
+
+---
+
+### 4. trade_record 交易记录表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 用户ID |
+| stock_code | VARCHAR(20) | 股票代码 |
+| type | VARCHAR(10) | 交易类型：BUY/SELL |
+| quantity | INT | 交易数量 |
+| price | DECIMAL(10,2) | 成交价格 |
+| amount | DECIMAL(12,2) | 成交金额 |
+| status | VARCHAR(20) | 状态：SUCCESS/FAILED/PENDING |
+| remark | VARCHAR(200) | 备注 |
+| create_time | DATETIME | 交易时间 |
+
+---
+
+### 5. knowledge 知识库表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| title | VARCHAR(200) | 标题 |
+| content | TEXT | 内容（原文）|
+| category | VARCHAR(50) | 分类：策略/新闻/教程/风险 |
+| create_time | DATETIME | 创建时间 |
+| update_time | DATETIME | 更新时间 |
+| deleted | TINYINT | 逻辑删除 |
+
+**注意**：向量数据存 Redis，不存 MySQL
+
+---
+
+### 6. chat_history 对话记录表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 用户ID |
+| session_id | VARCHAR(50) | 会话ID |
+| role | VARCHAR(20) | 角色：user/assistant |
+| content | TEXT | 消息内容 |
+| create_time | DATETIME | 发送时间 |
+
+**用于**：Spring AI ChatMemory 持久化
+
+---
+
+### 7. notification 消息通知表
+
+| 字段 | 类型 | 说明 |
+|-----|------|------|
+| id | BIGINT | 主键 |
+| user_id | BIGINT | 用户ID |
+| type | VARCHAR(20) | 类型：TRADE/PRICE/SYSTEM |
+| title | VARCHAR(100) | 标题 |
+| content | VARCHAR(500) | 内容 |
+| is_read | TINYINT | 是否已读：0未读/1已读 |
+| create_time | DATETIME | 创建时间 |
+
+**用于**：WebSocket 实时推送
 
 ---
 

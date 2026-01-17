@@ -1,0 +1,68 @@
+# ================================
+# 服务器配置
+# ================================
+server:
+  port: 8080  # 应用端口
+
+# ================================
+# Spring 核心配置
+# ================================
+spring:
+  application:
+    name: ai-investor  # 应用名称
+
+  # --- 数据库配置 ---
+  # ⚠️ 生产环境：修改为生产数据库地址和密码
+  datasource:
+    url: jdbc:mysql://47.120.29.86:3306/ai_investor?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # --- Redis 配置 ---
+  # ⚠️ 生产环境：修改为生产 Redis 地址和密码
+  data:
+    redis:
+      host: 47.120.29.86
+      port: 6379
+      password: 123456
+
+  # --- AI 配置（通义千问）---
+  # ⚠️ 生产环境：使用环境变量或配置中心管理 API Key
+  ai:
+    dashscope:
+      api-key: sk-14db90eb230a4863968ec1ecb27092e4  # 通义千问 API Key
+      chat:
+        options:
+          model: qwen-max  # 对话模型
+      embedding:
+        options:
+          model: tongyi-embedding-vision-flash  # 向量模型（RAG用）
+
+# ================================
+# 日志配置
+# ================================
+logging:
+  level:
+    root: info  # ⚠️ 生产环境：保持 info 或改为 warn
+    com.investor: debug  # ⚠️ 生产环境：改为 info
+    com.baomidou.mybatisplus: debug  # ⚠️ 生产环境：改为 info 或删除
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/ai-investor.log  # 日志文件路径
+
+# ================================
+# MyBatis-Plus 配置
+# ================================
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true  # 下划线转驼峰
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # ⚠️ 生产环境：删除此行！会打印SQL影响性能
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增
+      logic-delete-field: deleted  # 逻辑删除字段名
+      logic-delete-value: 1  # 已删除
+      logic-not-delete-value: 0  # 未删除
+  mapper-locations: classpath*:mapper/*.xml  # XML映射文件位置
