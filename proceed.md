@@ -8,7 +8,7 @@
 
 ---
 
-## 🟢 第一阶段：基础搭建（Day 1-3）✅ 进行中
+## 🟢 第一阶段：基础搭建（Day 1-3）✅ 已完成
 
 ### Day 1 - 项目初始化 ✅ 已完成
 
@@ -18,44 +18,44 @@
 - [x] 配置 .gitignore
 - [x] 推送到 GitHub
 
-### Day 2 - 数据库搭建 📌 当前
+### Day 2 - 数据库搭建 ✅ 已完成
 
-- [ ] 执行 init.sql 创建数据库
-- [ ] 创建实体类（Entity）
-- [ ] 创建 Mapper 接口
-- [ ] 集成 MyBatis-Plus
-- [ ] 测试数据库连接
+- [x] 执行 init.sql 创建数据库
+- [x] 创建实体类（Entity）
+- [x] 创建 Mapper 接口
+- [x] 集成 MyBatis-Plus
+- [x] 测试数据库连接
 
-### Day 3 - 通用模块
+### Day 3 - 通用模块 ✅ 已完成
 
-- [ ] 统一返回格式 Result
-- [ ] 全局异常处理
-- [ ] Knife4j 接口文档配置
-- [ ] 测试 Swagger 页面
+- [x] 统一返回格式 Result
+- [x] 全局异常处理 GlobalExceptionHandler
+- [x] Knife4j 接口文档配置
+- [x] 测试 Swagger 页面
 
 ---
 
-## 🟡 第二阶段：用户模块（Day 4-6）
+## 🟢 第二阶段：用户模块（Day 4-6）📌 进行中
 
-### Day 4 - 用户注册登录
+### Day 4 - 用户注册登录 ✅ 已完成
 
-- [ ] 注册接口
-- [ ] 登录接口
-- [ ] JWT 生成和验证
-- [ ] Swagger 测试
+- [x] 注册接口 `/api/register`
+- [x] 登录接口 `/api/login`
+- [x] JWT 工具类 `JwtUtil`（createToken、getTokenInfo、verify）
+- [x] DTO 参数校验（@Valid + @NotBlank）
+- [x] 校验异常统一处理
 
-### Day 5 - Spring Security
+### Day 5 - JWT 鉴权 📌 当前
 
-- [ ] SecurityConfig 配置
-- [ ] JwtAuthFilter 过滤器
-- [ ] 接口权限控制
-- [ ] 测试登录鉴权
+- [ ] JWT 拦截器 `AuthInterceptor`
+- [ ] 配置拦截规则 `WebConfig`
+- [ ] 测试登录验证
 
 ### Day 6 - 用户功能
 
 - [ ] 获取当前用户信息
 - [ ] 修改密码
-- [ ] 查看资产
+- [ ] 密码加密（BCryptPasswordEncoder）
 - [ ] 管理员：用户列表
 
 ---
@@ -201,7 +201,8 @@
 
 ### 必须完成
 
-- [ ] JWT 登录
+- [x] JWT 登录 ✅
+- [ ] JWT 拦截器 📌
 - [ ] 增删改查
 - [ ] WebSocket 推送
 - [ ] Redis 缓存
@@ -227,17 +228,60 @@
 - ✅ application.yml 配置
 - ✅ 推送到 GitHub
 - ✅ 数据库表设计
-- 📌 下一步：执行 init.sql，创建实体类
+
+### 2026-01-18
+
+- ✅ 执行 init.sql 创建数据库
+- ✅ 创建实体类 PO
+- ✅ 创建 Mapper 接口
+- ✅ Knife4j 配置
+- ✅ Result 统一返回类
+- ✅ GlobalExceptionHandler 异常处理
+
+### 2026-01-19
+
+- ✅ JwtUtil 工具类（createToken、getTokenInfo、verify）
+- ✅ LoginRequestDTO、RegisterRequestDTO
+- ✅ AuthController（登录、注册接口）
+- ✅ @Valid + @NotBlank 参数校验
+- ✅ MethodArgumentNotValidException 处理
+- 📌 下一步：JWT 拦截器
 
 ---
 
 ## 🎯 当前任务
 
-**执行 init.sql 创建数据库和表**
+**实现 JWT 拦截器**
 
-```bash
-# 在 MySQL 中执行
-source E:/spring/ai-investor/init.sql
+1. 创建 `AuthInterceptor.java` 实现 `HandlerInterceptor`
+2. 从 Header 获取 token
+3. 用 `JwtUtil.verify()` 验证
+4. 配置 `WebConfig.java` 注册拦截器
+5. 放行 `/api/login`、`/api/register`、`/doc.html`
+
+---
+
+## 📁 已完成的文件
+
+```
+src/main/java/com/investor/
+├── controller/
+│   └── AuthController.java     ✅ 登录注册接口
+├── entity/
+│   ├── dto/
+│   │   ├── LoginRequestDTO.java    ✅
+│   │   └── RegisterRequestDTO.java ✅
+│   └── po/                     ✅ 所有实体类
+├── mapper/                     ✅ 所有 Mapper
+├── service/                    ✅ 所有 Service
+├── util/
+│   └── JwtUtil.java            ✅ JWT 工具类
+├── common/
+│   └── Result.java             ✅ 统一返回
+├── exception/
+│   └── GlobalExceptionHandler.java ✅ 异常处理
+└── config/
+    └── Knife4jConfig.java      ✅ 接口文档
 ```
 
 ---
