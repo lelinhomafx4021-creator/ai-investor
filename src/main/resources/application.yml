@@ -1,12 +1,7 @@
-# ================================
-# 服务器配置
-# ================================
+
 server:
   port: 8080  # 应用端口
 
-# ================================
-# Spring 核心配置
-# ================================
 spring:
   application:
     name: ai-investor  # 应用名称
@@ -41,7 +36,6 @@ spring:
 
 # ================================
 # 日志配置
-# ================================
 logging:
   level:
     root: info  # ⚠️ 生产环境：保持 info 或改为 warn
@@ -52,9 +46,6 @@ logging:
   file:
     name: logs/ai-investor.log  # 日志文件路径
 
-# ================================
-# MyBatis-Plus 配置
-# ================================
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true  # 下划线转驼峰
@@ -66,3 +57,23 @@ mybatis-plus:
       logic-delete-value: 1  # 已删除
       logic-not-delete-value: 0  # 未删除
   mapper-locations: classpath*:mapper/*.xml  # XML映射文件位置
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  info:
+    title: AI 投资平台
+    description: AI 投资平台
+    version: 1.0.0  
+# Knife4j 配置
+knife4j:
+  enable: true
+  production: false
+jwt: 
+  secret: ai-investor-secret-key-2024-very-long-string
+  expiration: 86400000
+
