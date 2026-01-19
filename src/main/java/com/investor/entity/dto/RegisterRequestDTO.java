@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDto {
+public class RegisterRequestDTO {
     @NotBlank(message = "用户名不能为空")
     @Schema(description = "用户名",example = "admin")
     private String username;

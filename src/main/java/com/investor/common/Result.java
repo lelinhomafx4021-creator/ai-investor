@@ -15,10 +15,9 @@ public class Result<T> {
         result.data = data;
         return result;
     }
-    public static <T>Result<T> success() {
+    public static <T>Result<T> success(String message) {
         Result<T> result = new Result<>();
         result.code = 200;
-        result.message = "success";
         return result;
     }
     
