@@ -35,7 +35,7 @@
 
 ---
 
-## 🟢 第二阶段：用户模块（Day 4-6）📌 进行中
+## 🟢 第二阶段：用户模块（Day 4-6）✅ 已完成
 
 ### Day 4 - 用户注册登录 ✅ 已完成
 
@@ -44,19 +44,23 @@
 - [x] JWT 工具类 `JwtUtil`（createToken、getTokenInfo、verify）
 - [x] DTO 参数校验（@Valid + @NotBlank）
 - [x] 校验异常统一处理
+- [x] Result 方法重命名（successMsg、failMsg 避免泛型冲突）
 
-### Day 5 - JWT 鉴权 📌 当前
+### Day 5 - JWT 鉴权 ✅ 已完成
 
-- [ ] JWT 拦截器 `AuthInterceptor`
-- [ ] 配置拦截规则 `WebConfig`
-- [ ] 测试登录验证
+- [x] JWT 拦截器 `AuthInterceptor`
+- [x] 配置拦截规则 `WebConfig`
+- [x] 放行 Swagger/Knife4j 路径
+- [x] 测试登录验证
+- [x] 数据库唯一键异常处理 `DuplicateKeyException`
 
-### Day 6 - 用户功能
+### Day 6 - 用户功能 ✅ 已完成
 
-- [ ] 获取当前用户信息
-- [ ] 修改密码
-- [ ] 密码加密（BCryptPasswordEncoder）
-- [ ] 管理员：用户列表
+- [x] 获取当前用户信息 `/api/users/me`
+- [x] 修改密码 `/api/users/updatePassword`
+- [x] 密码加密（BCryptPasswordEncoder）
+- [x] UserVO 脱敏返回（不含密码）
+- [ ] 管理员：用户列表 `/api/admin/users`（后续做）
 
 ---
 
@@ -202,7 +206,7 @@
 ### 必须完成
 
 - [x] JWT 登录 ✅
-- [ ] JWT 拦截器 📌
+- [x] JWT 拦截器 ✅
 - [ ] 增删改查
 - [ ] WebSocket 推送
 - [ ] Redis 缓存
@@ -245,19 +249,40 @@
 - ✅ AuthController（登录、注册接口）
 - ✅ @Valid + @NotBlank 参数校验
 - ✅ MethodArgumentNotValidException 处理
-- 📌 下一步：JWT 拦截器
+
+### 2026-01-20
+
+- ✅ AuthInterceptor JWT 拦截器
+- ✅ WebConfig 拦截器配置
+- ✅ 放行 Knife4j/Swagger 路径
+- ✅ 解决依赖版本冲突（Spring Boot 3.2.5）
+- ✅ 修复 Result.success(String) 泛型冲突问题
+- ✅ 注册逻辑修复 + DuplicateKeyException 处理
+- ✅ 获取用户信息接口 `/api/users/me`
+- ✅ UserVO 脱敏返回（BeanUtil.copyProperties）
+- ✅ BCrypt 密码加密（SecurityConfig + @Bean）
+- ✅ 修改注册/登录逻辑（encode + matches）
+- ✅ 修改密码接口 `/api/users/updatePassword`
+- ✅ UpdatePasswordDTO 参数校验
+- 📌 下一步：Day 7 股票管理
 
 ---
 
 ## 🎯 当前任务
 
-**实现 JWT 拦截器**
+**Day 7 - 股票管理**
 
-1. 创建 `AuthInterceptor.java` 实现 `HandlerInterceptor`
-2. 从 Header 获取 token
-3. 用 `JwtUtil.verify()` 验证
-4. 配置 `WebConfig.java` 注册拦截器
-5. 放行 `/api/login`、`/api/register`、`/doc.html`
+1. 股票 CRUD 接口
+   - 股票列表查询
+   - 添加/编辑/删除股票
+
+2. 管理员权限
+   - 判断 role=admin
+   - 拦截非管理员
+
+3. 分页查询
+   - MyBatis-Plus 分页插件
+   - PageHelper
 
 ---
 
@@ -266,11 +291,15 @@
 ```
 src/main/java/com/investor/
 ├── controller/
-│   └── AuthController.java     ✅ 登录注册接口
+│   ├── AuthController.java     ✅ 登录注册接口（BCrypt加密）
+│   └── UserController.java     ✅ 用户功能（获取信息、改密码）
 ├── entity/
 │   ├── dto/
 │   │   ├── LoginRequestDTO.java    ✅
-│   │   └── RegisterRequestDTO.java ✅
+│   │   ├── RegisterRequestDTO.java ✅
+│   │   └── UpdatePasswordDTO.java  ✅ 修改密码参数
+│   ├── vo/
+│   │   └── UserVO.java             ✅ 用户信息返回（脱敏）
 │   └── po/                     ✅ 所有实体类
 ├── mapper/                     ✅ 所有 Mapper
 ├── service/                    ✅ 所有 Service
@@ -281,7 +310,10 @@ src/main/java/com/investor/
 ├── exception/
 │   └── GlobalExceptionHandler.java ✅ 异常处理
 └── config/
-    └── Knife4jConfig.java      ✅ 接口文档
+    ├── OpenApiConfig.java      ✅ 接口文档配置
+    ├── AuthInterceptor.java    ✅ JWT 拦截器
+    ├── WebConfig.java          ✅ 拦截器配置
+    └── SecurityConfig.java     ✅ BCrypt 密码加密配置
 ```
 
 ---

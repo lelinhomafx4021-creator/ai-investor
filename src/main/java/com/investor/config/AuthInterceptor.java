@@ -12,6 +12,7 @@ import cn.hutool.json.JSONUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -36,6 +37,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                 response.setStatus(401);
             }
             else {
+                Map<String,Object> userInfo = JwtUtil.getUserId(token);
+                Long userId = Long.valueOf(userInfo.get("userId").toString());
+                request.setAttribute("userId",userId);
+                request.setAttribute("username",userInfo.get("username"));
+                request.setAttribute("role",userInfo.get("role"));
                 return true;
                 
             }
@@ -44,7 +50,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
     public void sendError(HttpServletResponse response,String message) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().write(JSONUtil.toJsonStr(Result.fail(message)));
+        response.getWriter().write(JSONUtil.toJsonStr(Result.failMsg(message)));
     }
     
 }

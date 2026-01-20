@@ -65,14 +65,13 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+  packages-to-scan: com.investor.controller  # ← 加上这行！
   info:
     title: AI 投资平台
     description: AI 投资平台
-    version: 1.0.0  
-# Knife4j 配置
+    version: 1.0.0
 knife4j:
-  enable: true
-  production: false
+  enable: true    
 jwt: 
   secret: ai-investor-secret-key-2024-very-long-string
   expiration: 86400000
