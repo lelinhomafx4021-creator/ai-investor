@@ -13,6 +13,10 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 47.120.29.86
+    port: 6379
+    password: 123456  
 
   # --- Redis 配置 ---
   # ⚠️ 生产环境：修改为生产 Redis 地址和密码
@@ -33,6 +37,7 @@ spring:
       embedding:
         options:
           model: tongyi-embedding-vision-flash  # 向量模型（RAG用）
+
 
 # ================================
 # 日志配置
@@ -75,4 +80,6 @@ knife4j:
 jwt: 
   secret: ai-investor-secret-key-2024-very-long-string
   expiration: 86400000
+
+
 
