@@ -64,30 +64,31 @@
 
 ---
 
-## 🟡 第三阶段：股票行情（Day 7-10）
+## 🟢 第三阶段：股票行情（Day 7-10）
 
-### Day 7 - 股票管理
+### Day 7 - 股票管理 ✅ 已完成
 
-- [ ] 股票 CRUD 接口
-- [ ] 股票列表查询
-- [ ] 管理员：添加/编辑股票
+- [x] 股票 CRUD 接口（StockController）
+- [x] 股票列表查询（分页 + 关键字搜索）
+- [x] 管理员：添加/编辑/删除股票（AdminInterceptor权限拦截）
+- [x] 批量新增股票
 
-### Day 8 - 行情模拟
+### Day 8 - 行情模拟 ✅ 已完成
 
-- [ ] 定时任务模拟价格波动
-- [ ] 价格存入 Redis
-- [ ] 行情查询接口
+- [x] 定时任务模拟价格波动（MarketPriceTask，每5秒）
+- [x] 价格存入 Redis（RedisConfig + 缓存优先查询）
+- [x] 行情查询接口（从缓存获取）
 
-### Day 9 - WebSocket 推送
+### Day 9 - WebSocket 推送 ✅ 已完成
 
-- [ ] WebSocket 配置
-- [ ] 实时行情推送
-- [ ] 连接管理
+- [x] WebSocket 配置（WebSocketConfig）
+- [x] 实时行情推送（MarketPriceTask 调用 broadcast）
+- [x] 连接管理（MarketWebSocketHandler）
 
-### Day 10 - 行情测试
+### Day 10 - 行情测试 ✅ 已完成
 
-- [ ] Swagger 测试所有接口
-- [ ] WebSocket 测试客户端
+- [x] Swagger 测试所有接口
+- [x] WebSocket 测试客户端（piesocket 测试通过）
 
 ---
 
@@ -266,23 +267,35 @@
 - ✅ UpdatePasswordDTO 参数校验
 - 📌 下一步：Day 7 股票管理
 
+### 2026-01-22
+
+- ✅ StockController 股票CRUD接口
+- ✅ 分页搜索股票（PageQuery + lambdaQuery）
+- ✅ 根据ID/代码获取股票
+- ✅ 管理员新增/批量新增/删除/更新股票
+- ✅ AdminInterceptor 管理员权限拦截
+- ✅ RedisConfig 配置（JSON序列化 + JavaTimeModule）
+- ✅ MarketPriceTask 定时任务（每5秒模拟价格波动）
+- ✅ 缓存优先查询策略
+- 📌 下一步：Day 9 WebSocket 实时推送
+
 ---
 
 ## 🎯 当前任务
 
-**Day 7 - 股票管理**
+### Day 9 - WebSocket 推送
 
-1. 股票 CRUD 接口
-   - 股票列表查询
-   - 添加/编辑/删除股票
+1. WebSocket 配置
+   - WebSocketConfig 配置类
+   - 握手拦截器（可选JWT验证）
 
-2. 管理员权限
-   - 判断 role=admin
-   - 拦截非管理员
+2. 实时行情推送
+   - WebSocketHandler 处理器
+   - 定时任务推送价格到客户端
 
-3. 分页查询
-   - MyBatis-Plus 分页插件
-   - PageHelper
+3. 连接管理
+   - Session 管理
+   - 断线处理
 
 ---
 

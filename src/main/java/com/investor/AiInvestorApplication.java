@@ -16,4 +16,3 @@ public class AiInvestorApplication {
         SpringApplication.run(AiInvestorApplication.class, args);
     }
 }
- 

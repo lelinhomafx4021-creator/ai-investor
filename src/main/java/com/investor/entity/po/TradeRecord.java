@@ -41,37 +41,30 @@ public class TradeRecord implements Serializable {
      * 股票代码
      */
     private String stockCode;
-
     /**
      * 交易类型:BUY/SELL
      */
     private String type;
-
     /**
      * 交易数量
      */
     private Integer quantity;
-
     /**
      * 成交价格
      */
     private BigDecimal price;
-
     /**
      * 成交金额
      */
     private BigDecimal amount;
-
     /**
      * 状态:SUCCESS/FAILED/PENDING
      */
     private String status;
-
     /**
      * 备注
      */
     private String remark;
-
     /**
      * 交易时间
      */
