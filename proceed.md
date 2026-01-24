@@ -94,12 +94,14 @@
 
 ## 🟡 第四阶段：交易系统（Day 11-14）
 
-### Day 11 - 买入功能
+### Day 11 - 买入功能 ✅ 已完成
 
-- [ ] 买入接口
-- [ ] 余额校验
-- [ ] 更新持仓
-- [ ] 记录交易
+- [x] 买入接口（TradeController + TradeService）
+- [x] 余额校验（compareTo + 异常处理）
+- [x] 更新持仓（新用户save / 老用户计算均价update）
+- [x] 记录交易（TradeRecord）
+- [x] @Transactional 事务管理
+- [x] 空值检查（股票不存在异常）
 
 ### Day 12 - 卖出功能
 
@@ -279,23 +281,37 @@
 - ✅ 缓存优先查询策略
 - 📌 下一步：Day 9 WebSocket 实时推送
 
+### 2026-01-23
+
+- ✅ TradeController 交易控制器
+- ✅ TradeService + TradeServiceimpl 买入逻辑
+- ✅ 余额校验（BigDecimal.compareTo）
+- ✅ 持仓处理（新用户save / 老用户计算均价update）
+- ✅ @Transactional 事务管理
+- ✅ 空值检查（股票不存在异常）
+- ✅ 方法引用语法（Stock::getCode）
+- 📌 下一步：Day 12 卖出功能
+
 ---
 
 ## 🎯 当前任务
 
-### Day 9 - WebSocket 推送
+### Day 12 - 卖出功能
 
-1. WebSocket 配置
-   - WebSocketConfig 配置类
-   - 握手拦截器（可选JWT验证）
+1. 卖出接口
+   - TradeController 添加卖出方法
+   - TradeService 添加卖出逻辑
 
-2. 实时行情推送
-   - WebSocketHandler 处理器
-   - 定时任务推送价格到客户端
+2. 持仓校验
+   - 检查是否持有该股票
+   - 检查持仓数量是否足够
 
-3. 连接管理
-   - Session 管理
-   - 断线处理
+3. 更新余额和持仓
+   - 用户余额增加
+   - 持仓数量减少（或删除）
+
+4. 记录交易
+   - TradeRecord type="SELL"
 
 ---
 

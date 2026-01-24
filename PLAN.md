@@ -549,7 +549,7 @@ public void mockPriceChange() {
 | 字段 | 类型 | 说明 |
 |-----|------|------|
 | id | BIGINT | 主键 |
-| user_id | BIGINT | 用户ID |
+| user_id | BIGINT | 用户
 | stock_code | VARCHAR(20) | 股票代码 |
 | quantity | INT | 持有数量 |
 | avg_cost | DECIMAL(10,2) | 平均成本价 |
