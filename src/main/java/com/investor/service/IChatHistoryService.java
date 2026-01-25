@@ -3,6 +3,8 @@ package com.investor.service;
 import com.investor.entity.po.ChatHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 对话记录表 服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IChatHistoryService extends IService<ChatHistory> {
 
+    List<String> getHistoryList(Long userId);
 }

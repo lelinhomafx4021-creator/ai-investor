@@ -25,6 +25,7 @@ spring:
       host: 47.120.29.86
       port: 6379
       password: 123456
+      appendonly: yes
 
   # --- AI 配置（通义千问）---
   # ⚠️ 生产环境：使用环境变量或配置中心管理 API Key

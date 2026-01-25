@@ -92,7 +92,7 @@
 
 ---
 
-## 🟡 第四阶段：交易系统（Day 11-14）
+## � 第四阶段：交易系统（Day 11-14）✅ 已完成
 
 ### Day 11 - 买入功能 ✅ 已完成
 
@@ -103,26 +103,28 @@
 - [x] @Transactional 事务管理
 - [x] 空值检查（股票不存在异常）
 
-### Day 12 - 卖出功能
+### Day 12 - 卖出功能 ✅ 已完成
 
-- [ ] 卖出接口
-- [ ] 持仓校验
-- [ ] 更新余额
-- [ ] 记录交易
+- [x] 卖出接口
+- [x] 持仓校验
+- [x] 更新余额
+- [x] 记录交易
+- [x] 交易锁机制（同买入）
 
-### Day 13 - 分布式锁
+### Day 13 - 分布式锁 ✅ 已完成
 
-- [ ] Redisson 配置
-- [ ] 买入加锁
-- [ ] 卖出加锁
-- [ ] 防止超卖
+- [x] Redisson 依赖配置 (3.27.0)
+- [x] RedissonClient 自动装配
+- [x] 买入加锁 (lock:trade:userId)
+- [x] 卖出加锁
+- [x] 防止超卖/并发冲突 (tryLock + 看门狗)
 
-### Day 14 - 持仓和记录
+### Day 14 - 持仓和记录 ✅ 已完成
 
-- [ ] 持仓列表接口
-- [ ] 盈亏计算
-- [ ] 交易记录查询
-- [ ] 分页功能
+- [x] 持仓列表接口 (HoldingController + VO)
+- [x] 盈亏计算 (VO getter)
+- [x] 交易记录查询 (TradeRecordController)
+- [x] 分页功能 (PageQuery)
 
 ---
 
@@ -296,22 +298,19 @@
 
 ## 🎯 当前任务
 
-### Day 12 - 卖出功能
+### Day 15 - Spring AI 集成 (核心亮点)
 
-1. 卖出接口
-   - TradeController 添加卖出方法
-   - TradeService 添加卖出逻辑
+1. AI 基础配置
+   - 引入 spring-ai-alibaba-starter
+   - 配置 API Key (DashScope)
 
-2. 持仓校验
-   - 检查是否持有该股票
-   - 检查持仓数量是否足够
+2. 基础对话接口
+   - 注入 ChatClient
+   - 实现流式对话 (Stream)
 
-3. 更新余额和持仓
-   - 用户余额增加
-   - 持仓数量减少（或删除）
-
-4. 记录交易
-   - TradeRecord type="SELL"
+3. Prompt 提示词设计
+   - 角色设定（金融助手）
+   - 输出限制
 
 ---
 
@@ -342,7 +341,11 @@ src/main/java/com/investor/
     ├── OpenApiConfig.java      ✅ 接口文档配置
     ├── AuthInterceptor.java    ✅ JWT 拦截器
     ├── WebConfig.java          ✅ 拦截器配置
-    └── SecurityConfig.java     ✅ BCrypt 密码加密配置
+    ├── SecurityConfig.java     ✅ BCrypt 密码加密配置
+    └── RedissonConfig          ✅ (自动装配，无需手动)
+├── controller/
+│   ├── HoldingController.java  ✅ 持仓查询
+│   └── TradeRecordController.java ✅ 交易记录查询
 ```
 
 ---
