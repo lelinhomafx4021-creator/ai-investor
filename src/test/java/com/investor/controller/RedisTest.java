@@ -17,7 +17,6 @@ public class RedisTest {
         redisTemplate.opsForValue().set("test:name", "张三");
         System.out.println("存入成功！");
     }
-
     @Test
     public void testGet() {
         // 取值
@@ -32,7 +31,6 @@ public class RedisTest {
         map.put("code", "600519");
         map.put("name", "茅台");
         map.put("price", 1856);
-
         redisTemplate.opsForValue().set("test:stock", map);
         System.out.println("对象存入成功！");
 

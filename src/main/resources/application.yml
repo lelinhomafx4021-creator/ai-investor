@@ -13,31 +13,24 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    host: 47.120.29.86
-    port: 6379
-    password: 123456  
 
   # --- Redis 配置 ---
   # ⚠️ 生产环境：修改为生产 Redis 地址和密码
-  data:
-    redis:
+  data:         # ← data 在前
+    redis:      # ← redis 是 data 的子项
       host: 47.120.29.86
-      port: 6379
+      port: 6379 
       password: 123456
-      appendonly: yes
 
-  # --- AI 配置（通义千问）---
-  # ⚠️ 生产环境：使用环境变量或配置中心管理 API Key
   ai:
     dashscope:
       api-key: sk-14db90eb230a4863968ec1ecb27092e4  # 通义千问 API Key
       chat:
         options:
-          model: qwen-max  # 对话模型
+          model: qwen-vl-max # 对话模型
       embedding:
         options:
-          model: tongyi-embedding-vision-flash  # 向量模型（RAG用）
+          model: text-embedding-v3 # 向量模型（RAG用）
 
 
 # ================================
@@ -55,7 +48,7 @@ logging:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true  # 下划线转驼峰
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # ⚠️ 生产环境：删除此行！会打印SQL影响性能
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # ⚠️ 生产环境：删除此行！会打印SQL影响性能
   global-config:
     db-config:
       id-type: auto  # 主键自增

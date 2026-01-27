@@ -1,6 +1,7 @@
 package com.investor.config;
 
 import com.investor.common.Result;
+import com.investor.common.UserContents;
 import com.investor.util.JwtUtil;
 
 
@@ -23,8 +24,8 @@ public class AdminInterceptor implements HandlerInterceptor {
                              HttpServletResponse response,
                              Object handler) throws IOException {
         // 从 request 获取 role（AuthInterceptor 已经存好了）
-        String role = (String) request.getAttribute("role");
-        
+        String role = UserContents.getUserRole();
+
         if (!"ADMIN".equals(role)) {
             log.info("非管理员访问管理接口");
             response.setStatus(403);

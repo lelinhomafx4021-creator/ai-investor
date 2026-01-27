@@ -1,9 +1,8 @@
 package com.investor.controller;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.investor.common.Result;
-import com.investor.entity.dto.PageQuery;
+import com.investor.common.UserContents;
 import com.investor.entity.po.Holding;
 import com.investor.entity.po.Stock;
 import com.investor.entity.vo.HoldingVO;
@@ -25,14 +24,12 @@ public class HoldingController {
     private final IHoldingService holdingService;
     private final IStockService stockService;
     @GetMapping("/holdings")
-    public Result<List<HoldingVO>> getHoldingList(HttpServletRequest request, PageQuery pageQuery){
-        Long userId = (Long) request.getAttribute("userId");
-        Page page=new Page(pageQuery.getPage(), pageQuery.getSize());
-        Page holdingsPage = holdingService.lambdaQuery().eq(Holding::getUserId, userId).page(page);
-        if(holdingsPage.getRecords().isEmpty()){
+    public Result<List<HoldingVO>> getHoldingList(){
+        Long userId = UserContents.getUserId();
+        List<Holding> holdingList= holdingService.lambdaQuery().eq(Holding::getUserId, userId).list();
+        if(holdingList.isEmpty()){
             return Result.success(new ArrayList<>());
         }
-        List<Holding> holdingList= holdingsPage.getRecords();
         List<HoldingVO> holdingVOList= BeanUtil.copyToList(holdingList,HoldingVO.class);
         for (HoldingVO holdingVO:holdingVOList){
             Stock stock=stockService.lambdaQuery().eq(Stock::getCode,holdingVO.getStockCode()).one();

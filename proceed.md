@@ -128,13 +128,13 @@
 
 ---
 
-## 🟡 第五阶段：AI 功能（Day 15-20）⭐ 核心
+## 🟢 第五阶段：AI 功能（Day 15-20）⭐ 核心
 
-### Day 15 - Spring AI 集成
+### Day 15 - Spring AI 集成 ✅ 已完成
 
-- [ ] AI 配置
-- [ ] 基础对话接口
-- [ ] 流式输出
+- [x] AI 配置（AiConfig + ChatClient）
+- [x] 基础对话接口（ChatController）
+- [ ] 流式输出（进行中）
 
 ### Day 16 - 知识库管理
 
@@ -148,23 +148,26 @@
 - [ ] 向量存储 Redis
 - [ ] 相似度检索
 
-### Day 18 - Function Calling（查询）
+### Day 18 - Function Calling（查询）✅ 已完成
 
-- [ ] 查询股票工具
-- [ ] 查询持仓工具
-- [ ] 工具注册
+- [x] 查询股票工具（getStockByName、getStockByCode）
+- [x] 查询持仓工具（getUserHoldings）
+- [x] 查询所有股票（getAllStocks）
+- [x] 推荐股票（recommendStocks）
+- [x] 工具注册（AiConfig.defaultTools）
 
-### Day 19 - Function Calling（交易）
+### Day 19 - Function Calling（交易）✅ 已完成
 
-- [ ] 买入股票工具
-- [ ] 卖出股票工具
-- [ ] 安全确认
+- [x] 买入股票工具（buyStockByName）
+- [x] 卖出股票工具（sellStockByName）
+- [x] 支持名称或代码买入卖出
+- [x] UserContents ThreadLocal 传递用户ID
 
-### Day 20 - 对话完善
+### Day 20 - 对话完善 ✅ 已完成
 
-- [ ] ChatMemory 持久化
-- [ ] 会话管理
-- [ ] 对话历史
+- [x] ChatMemory 持久化（MychatMemory）
+- [x] 会话管理（会话列表接口）
+- [x] 对话历史（历史记录接口）
 
 ---
 
@@ -294,23 +297,83 @@
 - ✅ 方法引用语法（Stock::getCode）
 - 📌 下一步：Day 12 卖出功能
 
+### 2026-01-25
+
+- ✅ AiConfig 配置（ChatClient + System Prompt）
+- ✅ MychatMemory 实现（add/get/clear）
+- ✅ ChatController 完成（发消息、历史、会话列表）
+- ✅ ChatHistoryMapper 自定义 SQL
+- ✅ Builder 模式、Advisor 机制学习
+- ✅ Message 接口和实现类理解
+- ✅ 流式输出（WebFlux + Flux + SSE）
+- ✅ Spring AI 架构理解（OpenAI vs 阿里通义）
+- 📌 明天继续：StockTools (Function Calling)
+
+### 2026-01-26
+
+- ✅ UserContents 工具类（ThreadLocal 存储用户信息）
+- ✅ AuthInterceptor 添加 afterCompletion 清理 ThreadLocal
+- ✅ Controller 改用 UserContents 获取用户ID（不再用 request.getAttribute）
+- ✅ StockTools 完成：
+  - getStockByName - 根据名称查股票
+  - getStockByCode - 根据代码查股票
+  - getAllStocks - 查询所有股票
+  - recommendStocks - 推荐十只股票
+  - buyStockByName - 买入股票（支持名称或代码）
+  - sellStockByName - 卖出股票（支持名称或代码）
+  - getUserHoldings - 查询用户持仓
+- ✅ Function Calling 工具注册到 AiConfig
+
+#### RAG 知识库入库功能 ✅
+
+- ✅ pom.xml 添加 spring-ai-redis-store 依赖
+- ✅ VectorStoreConfig.java 配置 Redis VectorStore Bean
+  - 属性注入（@Value 读取 Redis 配置）
+  - 创建 JedisPooled 连接
+  - 创建 RedisVectorStore（面向接口编程）
+- ✅ KnowledgeDTO.java 请求参数类
+- ✅ IKnowledgeService.java 声明 addKnowledge/deleteKnowledge 方法
+- ✅ KnowledgeServiceImpl.java 入库逻辑
+  - 数据双写：MySQL + VectorStore
+  - Document 对象（content + id + metadata）
+  - 删除同步：removeById + vectorStore.delete
+- ✅ KnowledgeController.java 管理端接口
+  - POST /api/knowledge - 添加知识
+  - DELETE /api/knowledge/{id} - 删除知识
+  - GET /api/knowledge - 知识列表
+
+#### 今日学习知识点
+
+- Spring AI VectorStore 接口和 RedisVectorStore 实现
+- RediSearch 向量索引原理（为什么需要 indexName）
+- Document 类结构（id + content + metadata + embedding）
+- 面向接口编程 + 依赖注入
+- Maven 版本冲突原理和解决方案
+
+#### ⚠️ 待修复
+
+- VectorStoreConfig.java 的 @Value 需要改成 ${spring.data.redis.xxx}
+- KnowledgeController.java 的 addKnowledge 需要加 @RequestBody
+
+- 📌 下一步：RagService（RAG 检索）+ 修改 ChatController（对话时使用 RAG）
+
 ---
 
-## 🎯 当前任务
+## 🎯 下一步任务
 
-### Day 15 - Spring AI 集成 (核心亮点)
+### RAG 知识库
 
-1. AI 基础配置
-   - 引入 spring-ai-alibaba-starter
-   - 配置 API Key (DashScope)
+1. **知识库管理**
+   - 知识 CRUD 接口
+   - 文档分块（chunking）
 
-2. 基础对话接口
-   - 注入 ChatClient
-   - 实现流式对话 (Stream)
+2. **向量化存储**
+   - 配置 VectorStore（SimpleVectorStore 或 Redis）
+   - Embedding 向量化
 
-3. Prompt 提示词设计
-   - 角色设定（金融助手）
-   - 输出限制
+3. **RAG 检索**
+   - QuestionAnswerAdvisor 整合到 ChatClient
+   - 测试知识问答
 
 ---
 
@@ -345,7 +408,15 @@ src/main/java/com/investor/
     └── RedissonConfig          ✅ (自动装配，无需手动)
 ├── controller/
 │   ├── HoldingController.java  ✅ 持仓查询
-│   └── TradeRecordController.java ✅ 交易记录查询
+│   ├── TradeRecordController.java ✅ 交易记录查询
+│   └── ChatController.java     ✅ AI对话（发消息、历史、会话列表）
+├── component/
+│   └── MychatMemory.java       ✅ ChatMemory 持久化实现
+├── common/
+│   └── UserContents.java       ✅ ThreadLocal 用户信息传递
+├── config/
+│   ├── AiConfig.java           ✅ ChatClient 配置（含 Tools 注册）
+│   └── StockTools.java         ✅ AI 工具函数（查询、买卖、持仓）
 ```
 
 ---

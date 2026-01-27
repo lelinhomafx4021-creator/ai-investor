@@ -1,6 +1,7 @@
 package com.investor.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.investor.common.UserContents;
 import com.investor.entity.dto.UpdatePasswordDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,11 +27,12 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "获取当前用户信息")
-    public Result<UserVO> getUserInfo(HttpServletRequest request) {
-        if ((String) request.getAttribute("username") == null) {
+    public Result<UserVO> getUserInfo() {
+        Long userId = UserContents.getUserId();
+        String username=UserContents.getUserName();
+        if (username== null) {
             return Result.failMsg("请先登录");
         }
-        String username = (String) request.getAttribute("username");
         User user = userService.lambdaQuery().eq(User::getUsername, username).one();
         if (user != null) {
             UserVO userVO = BeanUtil.copyProperties(user, UserVO.class);
@@ -40,9 +42,8 @@ public class UserController {
     }
     @Operation(summary = "修改密码")
     @PostMapping("/updatePassword")
-    public Result<Void> updatePassword(HttpServletRequest request,
-            @Valid @RequestBody UpdatePasswordDTO updatePasswordDTO) {
-        Long userId = (Long) request.getAttribute("userId");
+    public Result<Void> updatePassword(@Valid @RequestBody UpdatePasswordDTO updatePasswordDTO) {
+        Long userId = UserContents.getUserId();
         User user = userService.getById(userId);
         if (!bCryptPasswordEncoder.matches(updatePasswordDTO.getOldPassword(), user.getPassword())) {
             return Result.failMsg("原密码错误");

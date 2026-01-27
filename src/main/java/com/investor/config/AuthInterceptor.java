@@ -1,14 +1,14 @@
 package com.investor.config;
 
 import com.investor.common.Result;
+import com.investor.common.UserContents;
 import com.investor.util.JwtUtil;
-
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import cn.hutool.json.JSONUtil; 
+import cn.hutool.json.JSONUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
@@ -38,10 +38,14 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
             else {
                 Map<String,Object> userInfo = JwtUtil.getUserId(token);
+                String role=userInfo.get("role").toString();
                 Long userId = Long.valueOf(userInfo.get("userId").toString());
                 request.setAttribute("userId",userId);
                 request.setAttribute("username",userInfo.get("username"));
                 request.setAttribute("role",userInfo.get("role"));
+                UserContents.setUserId(userId);
+                UserContents.setUserName(userInfo.get("username").toString());
+                UserContents.setUserRole(role);
                 return true;
                 
             }
@@ -51,6 +55,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public void sendError(HttpServletResponse response,String message) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(JSONUtil.toJsonStr(Result.failMsg(message)));
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request,
+                                HttpServletResponse response,
+                                Object handler,
+                                Exception ex){
+        UserContents.remove();
     }
     
 }

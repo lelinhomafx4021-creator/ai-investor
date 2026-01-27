@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.TimeUnit;
 
+import com.investor.common.UserContents;
 import com.investor.entity.po.TradeRecord;
 import com.investor.entity.po.User;
 
@@ -32,8 +33,8 @@ public class TradeServiceImpl implements TradeService {
 
     @Transactional
     @Override
-    public void buyTrades(TradeDTO tradeDTO, HttpServletRequest request) throws InterruptedException {
-        Long userId = (Long) request.getAttribute("userId");
+    public void buyTrades(TradeDTO tradeDTO) throws InterruptedException {
+        Long userId = UserContents.getUserId();
         User user = userService.getById(userId);
         RLock rLock = redissonClient.getLock("lock:trade:" + userId);
         if (rLock.tryLock(3, TimeUnit.SECONDS)) {
@@ -88,8 +89,8 @@ public class TradeServiceImpl implements TradeService {
 
     @Transactional
     @Override
-    public void sellTrades(TradeDTO tradeDTO, HttpServletRequest request) throws InterruptedException {
-        Long userId = (Long) request.getAttribute("userId");
+    public void sellTrades(TradeDTO tradeDTO) throws InterruptedException {
+        Long userId = UserContents.getUserId();
         String stockCode = tradeDTO.getCode();
         RLock rLock = redissonClient.getLock("lock:trade:" + userId);
         if (rLock.tryLock(3, TimeUnit.SECONDS)) {
