@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -58,5 +60,16 @@ public class UserController {
         }
 
     }
+    @Operation(summary = "修改个人资料")
+    @PutMapping("/ban")
+public Result<Void> banById(@RequestBody List<Long> userids) {
+    userService.lambdaUpdate()
+        .in(User::getId, userids)
+        .set(User::getStatus, "BANNED")
+        .update();
+    return Result.successMsg("封禁成功");
+}
+
+    
 
 }

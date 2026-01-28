@@ -14,5 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class AiInvestorApplication {
     public static void main(String[] args) {
         SpringApplication.run(AiInvestorApplication.class, args);
+    
     }
 }

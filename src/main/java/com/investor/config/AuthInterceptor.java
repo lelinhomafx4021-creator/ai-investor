@@ -2,10 +2,13 @@ package com.investor.config;
 
 import com.investor.common.Result;
 import com.investor.common.UserContents;
+import com.investor.entity.po.User;
+import com.investor.service.IUserService;
 import com.investor.util.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import cn.hutool.json.JSONUtil;
@@ -16,7 +19,10 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
+    private final IUserService userService;
+    
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
@@ -40,6 +46,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 Map<String,Object> userInfo = JwtUtil.getUserId(token);
                 String role=userInfo.get("role").toString();
                 Long userId = Long.valueOf(userInfo.get("userId").toString());
+                User user = userService.getById(userId);
+                if (user==null){
+                    log.info("用户不存在");
+                    sendError(response,"用户不存在");
+                    response.setStatus(401);
+                    return false;
+                }
                 request.setAttribute("userId",userId);
                 request.setAttribute("username",userInfo.get("username"));
                 request.setAttribute("role",userInfo.get("role"));

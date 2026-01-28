@@ -31,7 +31,17 @@ spring:
       embedding:
         options:
           model: text-embedding-v3 # 向量模型（RAG用）
+  rabbitmq:
+    host: 47.120.29.86
+    port: 5672
+    username: admin
+    password: 123456        
 
+oss:
+  endpoint: oss-cn-beijing.aliyuncs.com
+  bucket: package5
+  access-key: ${OSS_ACCESS_KEY}
+  access-secret: ${OSS_ACCESS_SECRET}
 
 # ================================
 # 日志配置

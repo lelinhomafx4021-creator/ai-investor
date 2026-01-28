@@ -17,7 +17,7 @@ public class OpenApiConfig {
                         .description("模拟炒股 + AI 智能交易")
                         .version("1.0.0")
                         .contact(new Contact()
-                                .name("开发者")
+                                .name("开发者yjx")
                                 .email("your@email.com")));
     }
 }

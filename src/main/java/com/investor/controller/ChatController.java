@@ -1,5 +1,4 @@
 package com.investor.controller;
-
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.investor.common.Result;
 import com.investor.common.SentinelBlockHandle;
@@ -8,25 +7,19 @@ import com.investor.entity.dto.ChatDTO;
 import com.investor.entity.po.ChatHistory;
 import com.investor.service.IChatHistoryService;
 import com.investor.service.IKnowledgeService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.document.Document;
 import org.springframework.http.MediaType;
 import reactor.core.publisher.Flux;
-
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-
 @RequestMapping("/api/chat")
 @RestController
-
 @RequiredArgsConstructor
 public class ChatController {
     private  final  ChatMemory chatMemory;

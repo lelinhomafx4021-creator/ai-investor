@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class TradeRecordController {
-
     private final ITradeRecordService tradeRecordService;
     @GetMapping("/traderecords")
     public Result<List<TradeRecord>> getTradeRecords(PageQuery pageQuery){

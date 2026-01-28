@@ -24,6 +24,8 @@ public class SentinelConfig {
 
     @PostConstruct
     public void initRules(){
+         System.setProperty("csp.sentinel.dashboard.server", "localhost:8858");
+    System.setProperty("csp.sentinel.api.port", "8719");
         initFlowRules();
     }
 

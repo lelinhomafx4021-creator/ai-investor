@@ -5,6 +5,8 @@ import java.math.RoundingMode;
 import java.util.concurrent.TimeUnit;
 
 import com.investor.common.UserContents;
+import com.investor.config.RabbitConfig;
+import com.investor.entity.dto.NotifyMessageDTO;
 import com.investor.entity.po.TradeRecord;
 import com.investor.entity.po.User;
 
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +33,7 @@ public class TradeServiceImpl implements TradeService {
     private final ITradeRecordService tradeRecordService;
     private final IHoldingService holdingService;
     private final RedissonClient redissonClient;
+    private final RabbitTemplate rabbitTemplate;
 
     @Transactional
     @Override
@@ -75,7 +79,9 @@ public class TradeServiceImpl implements TradeService {
                         .setAmount(quantity.multiply(currentPrice))
                         .setRemark("买入股票信息").setStatus("SUCCESS");
                 tradeRecordService.save(tradeRecord);
-
+                NotifyMessageDTO notifyMessageDTO=new NotifyMessageDTO();
+                notifyMessageDTO.setUserId(userId).setType("Trade").setTitle("买入股票成功").setContent("买入股票信息："+stock.getName()+"\n 买入时价格："+currentPrice.toString()+"买入份数："+quantity.toString());
+                rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME,RabbitConfig.ROUTING_KEY,notifyMessageDTO);
             } finally {
                 if (rLock.isHeldByCurrentThread()) {
                     rLock.unlock();
@@ -134,6 +140,9 @@ public class TradeServiceImpl implements TradeService {
                         .setStatus("SUCCESS")
                         .setRemark("卖出股票");
                 tradeRecordService.save(tradeRecord);
+                NotifyMessageDTO notifyMessageDTO=new NotifyMessageDTO();
+                notifyMessageDTO.setUserId(userId).setType("Trade").setTitle("卖出股票成功").setContent("卖出股票信息："+stock.getName()+"\n 卖出时价格："+currentPrice.toString()+"卖出份数："+quantity.toString());
+                rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME,RabbitConfig.ROUTING_KEY,notifyMessageDTO);
             } finally {
                 if (rLock.isHeldByCurrentThread()) {
                     rLock.unlock();

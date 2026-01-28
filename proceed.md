@@ -60,7 +60,11 @@
 - [x] 修改密码 `/api/users/updatePassword`
 - [x] 密码加密（BCryptPasswordEncoder）
 - [x] UserVO 脱敏返回（不含密码）
-- [ ] 管理员：用户列表 `/api/admin/users`（后续做）
+- [x] 头像上传（OSS + 分离式上传）
+- [x] 修改个人资料 `/api/users/profile`
+- [x] 管理员：用户封禁 `/api/users/ban`（lambdaUpdate 批量更新）
+- [x] 管理员：用户删除 `/api/users/{userid}`
+- [x] 拦截器封禁检查（AuthInterceptor 检查 status）
 
 ---
 
@@ -134,19 +138,20 @@
 
 - [x] AI 配置（AiConfig + ChatClient）
 - [x] 基础对话接口（ChatController）
-- [ ] 流式输出（进行中）
+- [x] 流式输出（Flux + SSE）
 
-### Day 16 - 知识库管理
+### Day 16 - 知识库管理 ✅ 已完成
 
-- [ ] 知识 CRUD
-- [ ] 文档上传
-- [ ] 文本分块
+- [x] 知识 CRUD（KnowledgeController）
+- [x] VectorStore 配置（RedisVectorStore）
+- [x] 知识入库（MySQL + VectorStore 双写）
 
-### Day 17 - RAG 检索
+### Day 17 - RAG 检索 ✅ 已完成
 
-- [ ] Embedding 向量化
-- [ ] 向量存储 Redis
-- [ ] 相似度检索
+- [x] Embedding 向量化（VectorStoreConfig）
+- [x] 向量存储 Redis（knowledge-index）
+- [x] 相似度检索（searchKnowledges，手动实现）
+- [x] 对话时 RAG 检索（ChatController 拼接上下文）
 
 ### Day 18 - Function Calling（查询）✅ 已完成
 
@@ -171,13 +176,14 @@
 
 ---
 
-## 🟡 第六阶段：消息通知（Day 21-22）
+## 🟢 第六阶段：消息通知（Day 21-22）
 
-### Day 21 - 通知系统
+### Day 21 - 通知系统 ✅ 已完成
 
-- [ ] 通知表 CRUD
-- [ ] 发送通知
-- [ ] 标记已读
+- [x] RabbitMQ 配置（RabbitConfig：交换机 + 队列 + 绑定）
+- [x] 交易成功发送通知（TradeServiceImpl 买入/卖出后发消息）
+- [x] 消息DTO（NotifyMessageDTO）
+- [ ] 通知消费者（可选：存库/推送）
 
 ### Day 22 - WebSocket 通知
 
@@ -215,18 +221,18 @@
 
 - [x] JWT 登录 ✅
 - [x] JWT 拦截器 ✅
-- [ ] 增删改查
-- [ ] WebSocket 推送
-- [ ] Redis 缓存
-- [ ] 分布式锁
-- [ ] Spring AI 对话
-- [ ] Function Calling
-- [ ] RAG 知识检索
+- [x] 增删改查 ✅（股票、用户、持仓、交易记录）
+- [x] WebSocket 推送 ✅（行情实时推送）
+- [x] Redis 缓存 ✅（行情缓存 + 向量存储）
+- [x] 分布式锁 ✅（Redisson）
+- [x] Spring AI 对话 ✅（流式输出）
+- [x] Function Calling ✅（StockTools）
+- [x] RAG 知识检索 ✅（VectorStore）
 
 ### 加分项
 
-- [ ] RabbitMQ 削峰
-- [ ] Sentinel 限流
+- [ ] RabbitMQ 削峰（进行中）
+- [x] Sentinel 限流 ✅
 - [ ] 排行榜
 
 ---
@@ -356,6 +362,54 @@
 - KnowledgeController.java 的 addKnowledge 需要加 @RequestBody
 
 - 📌 下一步：RagService（RAG 检索）+ 修改 ChatController（对话时使用 RAG）
+
+### 2026-01-27
+
+#### Sentinel 限流 ✅
+
+- ✅ pom.xml 添加 Sentinel 依赖（core + annotation-aspectj + transport-simple-http）
+- ✅ SentinelConfig.java 配置类
+  - @Bean SentinelResourceAspect（使注解生效）
+  - @PostConstruct initFlowRules()（代码写死规则）
+- ✅ 流控规则配置：
+  - buyStock - QPS=10
+  - sellStock - QPS=10  
+  - chat - 线程数=10
+- ✅ SentinelBlockHandle.java 统一限流处理类
+  - buyhandle（返回 Result）
+  - sellhandle（返回 Result）
+  - chathandle（返回 Flux，适配流式接口）
+- ✅ Controller 添加 @SentinelResource 注解
+  - TradeController.buyTrades
+  - TradeController.sellTrades
+  - ChatController.chat
+
+#### 今日学习知识点
+
+- 限流方式：QPS（按流量）vs 线程数（按并发）
+- Sentinel 三大组件：@SentinelResource（注解）+ SentinelResourceAspect（切面）+ FlowRuleManager（规则管理器）
+- @Bean vs @Component：第三方类用 @Bean 注册
+- 统一处理类：static 方法 + blockHandlerClass
+- Dashboard：可视化控制台，规则存在客户端内存（重启丢失）
+- Dashboard 和客户端交互：拉取规则（GET）/推送规则（POST），规则不存在 Dashboard
+
+#### RabbitMQ 消息通知（进行中）
+
+- ✅ 服务器 Docker 部署 RabbitMQ
+- 📌 下一步：
+  - 添加 spring-boot-starter-amqp 依赖
+  - application.yml 配置 RabbitMQ 连接
+  - RabbitConfig.java 定义交换机、队列、绑定
+  - 买入/卖出成功后发送通知消息
+  - NotificationConsumer 消费者处理通知
+
+#### 今日学习知识点（MQ 相关）
+
+- MQ 四大作用：异步解耦、削峰填谷、失败重试、系统解耦
+- RabbitMQ 核心组件：生产者 → 交换机 → 队列 → 消费者
+- 四种交换机类型：Direct/Fanout/Topic/Headers
+- 持久化三层：交换机持久化 + 队列持久化 + 消息持久化
+- Redis 持久化对比：RDB（快照）vs AOF（日志）
 
 ---
 
